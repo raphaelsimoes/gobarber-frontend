@@ -56,8 +56,26 @@ const Profile: React.FC =() => {
             await schema.validate(data, {
                 abortEarly: false,
             });
+
+            const {
+                email,
+                name,
+                old_password,
+                password,
+                password_confirmation,
+            } = data;
+
+            const formData = {
+                name,
+                email,
+                ...(old_password ? {
+                    old_password,
+                    password,
+                    password_confirmation,
+                } : {}),
+            };
             
-            const response = await api.put('/profile', data);
+            const response = await api.put('/profile', formData);
 
             updateUser(response.data);
 
@@ -69,8 +87,6 @@ const Profile: React.FC =() => {
                 description: 'Seu perfil foi atualizado com sucesso!',
             });
         } catch (err) {
-
-            console.log(err);
 
             if (err instanceof Yup.ValidationError) {
                 const errors = getValidationErrors(err);
